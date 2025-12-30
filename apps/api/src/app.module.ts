@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
 
 @Module({
-  imports: [TodoModule],
+  imports: [TodoModule, AuthModule],
   controllers: [AppController],
   providers: [],
 })
