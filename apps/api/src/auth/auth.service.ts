@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { UserService } from 'user/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { SignupDto } from './dtos/signup.dto';
 
@@ -13,15 +13,9 @@ export class AuthService {
 
   // 토큰 생성 (accessToken + refreshToken)
   private generateTokens(userId: number, email: string) {
-    const accessToken = this.jwtService.sign(
-      { sub: userId, email, type: 'access' },
-      { expiresIn: '1h' },
-    );
+    const accessToken = this.jwtService.sign({ sub: userId, email, type: 'access' }, { expiresIn: '1h' });
 
-    const refreshToken = this.jwtService.sign(
-      { sub: userId, email, type: 'refresh' },
-      { expiresIn: '7d' },
-    );
+    const refreshToken = this.jwtService.sign({ sub: userId, email, type: 'refresh' }, { expiresIn: '7d' });
 
     return { accessToken, refreshToken };
   }
@@ -92,10 +86,7 @@ export class AuthService {
     }
 
     // accessToken만 새로 발급
-    const accessToken = this.jwtService.sign(
-      { sub: user.id, email: user.email, type: 'access' },
-      { expiresIn: '1h' },
-    );
+    const accessToken = this.jwtService.sign({ sub: user.id, email: user.email, type: 'access' }, { expiresIn: '1h' });
 
     return { accessToken };
   }

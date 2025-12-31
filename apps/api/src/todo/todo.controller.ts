@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from 'auth/decorators/roles.decorator';
+import { JwtAuthGuard } from 'auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'auth/guards/roles.guard';
 import { CreateTodoDto } from './dtos/create-todo.dto';
 import { UpdateTodoDto } from './dtos/update-todo.dto';
 import { TodoService } from './todo.service';
