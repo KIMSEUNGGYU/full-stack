@@ -35,6 +35,9 @@ packages/
 - [x] Docker MySQL 설정 (docker-compose.yml)
 - [x] Todo CRUD API 구현 (TypeORM 사용)
 - [x] AI 학습 자료 구성 (`.ai/api/` 폴더)
+- [x] Auth 모듈 구현 (회원가입, 로그인, JWT)
+- [x] Guard 및 Decorator 구현 (JwtAuthGuard, RolesGuard, @Roles, @CurrentUser)
+- [x] Todo API에 인증/인가 적용
 
 ### 진행 중
 - [ ] TypeORM → MikroORM 변경
@@ -46,10 +49,14 @@ packages/
 
 ## 알고 있는 것 / 학습 필요
 
-### 알고 있음 (FE 관점에서 이해)
-- Controller: 라우팅 담당 (React Router와 유사)
-- Module: 의존성 그룹화 (React Context Provider와 유사)
+### 알고 있음
+- Controller: 라우팅 담당
+- Module: 의존성 그룹화
 - 데코레이터: 메타데이터 추가 (@Get, @Post 등)
+- Guard: 요청 허용/차단 (CanActivate 인터페이스)
+- SetMetadata: 메타데이터 저장 (Guard가 Reflector로 읽음)
+- createParamDecorator: 파라미터에 값 주입
+- 데코레이터 실행 순서: 컴파일 타임(메타데이터 저장) → 런타임(Guard 실행)
 
 ### 학습 필요
 - Service와 Repository 분리 이유
@@ -63,6 +70,7 @@ packages/
 - `.ai/api/` - AI 컨텍스트 및 학습 자료
   - `LEARNING.md` - 레이어 아키텍처, NestJS 개념, 코드 패턴 정리
   - `NESTJS-GUIDE.md` - NestJS 가이드
+  - `AUTH-GUARD-DECORATOR.md` - Guard, Decorator, 인증/인가 시스템 정리
   - `prompts/` - 학습용 프롬프트 모음
     - `nestjs-mikroorm-context.md` - 아키텍처 규칙
     - `nestjs-mikroorm-snippets.md` - 코드 템플릿
@@ -105,42 +113,46 @@ packages/
 
 ## 현재 세션 컨텍스트
 
-> 마지막 업데이트: 2024-12-31
+> 마지막 업데이트: 2025-12-31
 
 ### 현재 상태
 
-**구현된 것:**
-- Todo CRUD API (`apps/api/src/todo/`)
-  - Entity: `todo.entity.ts` (TypeORM 사용)
-  - DTO: `create-todo.dto.ts`, `update-todo.dto.ts`
-  - Controller: `todo.controller.ts`
-  - Service: `todo.service.ts`
-  - Module: `todo.module.ts`
+**Auth 모듈** (`apps/api/src/auth/`)
+- `auth.controller.ts` - 회원가입, 로그인, 토큰 갱신 API
+- `auth.service.ts` - JWT 토큰 생성/검증 로직
+- `guards/jwt-auth.guard.ts` - 토큰 검증 Guard
+- `guards/roles.guard.ts` - 역할 기반 접근 제어 Guard
+- `decorators/roles.decorator.ts` - @Roles() 메타데이터 저장
+- `decorators/current-user.decorator.ts` - @CurrentUser() 파라미터 주입
+
+**User 모듈** (`apps/api/src/user/`)
+- `user.entity.ts` - UserRole enum (USER, ADMIN) 포함
+- `user.service.ts` - 메모리 기반 사용자 저장소
+
+**Todo 모듈** (`apps/api/src/todo/`)
+- 인증 적용됨 (JwtAuthGuard, RolesGuard)
+- DELETE는 admin만 가능
 
 **설정 파일:**
-- `docker-compose.yml` - MySQL 8.0 컨테이너 설정
-  - DB명: fullstack
-  - 유저: fullstack / fullstack123
-  - 포트: 3306
+- `docker-compose.yml` - MySQL 8.0 (fullstack / fullstack123)
 
 ### 다음 작업
 
 1. **TypeORM → MikroORM 마이그레이션**
    - MikroORM 패키지 설치
-   - Todo Entity를 MikroORM 문법으로 변경
+   - Entity를 MikroORM 문법으로 변경
    - Repository 패턴 적용
-   - flush() 개념 학습
 
-2. **DB 연결 테스트**
-   - Docker MySQL 실행: `docker-compose up -d`
-   - API 서버 실행: `pnpm --filter api dev`
-   - 헬스체크: `GET http://localhost:4000`
+2. **Express Request 타입 확장**
+   - `types/express.d.ts` 추가하여 `request.user` 타입 지정
 
-### 참고 커밋
+### 최근 커밋
 
 ```
-7f4188e feat: biome.json 파일에 JavaScript 파서 설정 추가
-79bb420 feat: Todo 모듈 및 관련 엔티티, DTO, 서비스, 컨트롤러 추가
-288c5ff feat: AppService 제거 및 AppController에 헬스 체크 엔드포인트 추가
-2429a48 feat: NestJS API 기본 구조 및 설정 파일 추가
+16d6b51 docs: NestJS 인증 및 권한 가이드 문서 추가
+69d3e00 feat: JWT 인증 및 역할 기반 접근 제어 추가
+68dc261 feat: 사용자 역할 추가 및 초기 사용자 데이터 설정
+1a4a395 feat: 토큰 갱신 기능 추가
+ad8b05a feat: JWT 인증 기능 추가
+c5370d5 feat: 인증 모듈 추가
 ```
