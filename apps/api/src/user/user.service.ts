@@ -4,8 +4,25 @@ import { User } from './user.entity';
 @Injectable()
 export class UserService {
   // Mock 데이터 (나중에 DB로 교체)
-  private users: User[] = [];
-  private idCounter = 1;
+  private users: User[] = [
+    {
+      id: 1,
+      email: 'admin@test.com',
+      password: 'admin123',
+      name: '관리자',
+      role: 'admin',
+      createdAt: new Date(),
+    },
+    {
+      id: 2,
+      email: 'test@test.com',
+      password: 'test123',
+      name: '유저1',
+      role: 'admin',
+      createdAt: new Date(),
+    },
+  ];
+  private idCounter = 3;
 
   // 이메일로 사용자 찾기
   findByEmail(email: string): User | undefined {
@@ -24,6 +41,7 @@ export class UserService {
       email: data.email,
       password: data.password,
       name: data.name,
+      role: 'user', // 기본값: 일반 사용자
       createdAt: new Date(),
     };
     this.users.push(user);
