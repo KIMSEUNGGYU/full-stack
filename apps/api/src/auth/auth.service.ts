@@ -1,11 +1,15 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { SignupDto } from './dtos/signup.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   // 회원가입
   signup(dto: SignupDto) {
@@ -40,11 +44,15 @@ export class AuthService {
       throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
     }
 
-    // 비밀번호 제외하고 반환 (TODO: 나중에 JWT 토큰 반환)
+    // JWT 토큰 생성
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
+
+    // 비밀번호 제외하고 반환
     const { password, ...result } = user;
     return {
       user: result,
-      message: '로그인 성공',
+      accessToken,
     };
   }
 }
